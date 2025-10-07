@@ -1,0 +1,5 @@
+{
+  "name": "Eradicator Anti-Corruption Platform",
+  "description": "A comprehensive user panel for an anti-corruption platform, featuring AI-powered analysis, RAB generation, educational articles, and an AI assistant. Built with React and Tailwind CSS.",
+  "requestFramePermissions": []
+}

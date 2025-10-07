@@ -1,0 +1,5 @@
+{
+  "name": "ERADICATOR Admin Panel",
+  "description": "Admin panel for managing users, financial reports, market price data, and educational articles for the ERADICATOR AI-powered corruption detection system.",
+  "requestFramePermissions": []
+}
