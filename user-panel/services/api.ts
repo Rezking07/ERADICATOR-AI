@@ -15,3 +15,5 @@ export async function submitReport(data: any) {
   });
   return await res.json();
 }
+
+const API_BASE_URL = 'https://bisque-ostrich-762777.hostingersite.com/api'
