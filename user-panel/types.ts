@@ -1,3 +1,5 @@
+// rezking07/eradicator-ai/ERADICATOR-AI-c97fdc3b5374f6cffe6641c8f996ff599a2f96b6/user-panel/types.ts
+
 export interface Article {
   id: number;
   title: string;
@@ -53,11 +55,21 @@ export interface PriceReference {
   addedDate: string;
 }
 
+// PERUBAHAN DIMULAI DI SINI
+export interface InsightItem {
+  type: 'MARK_UP' | 'UNRECOGNIZED' | 'UNIT_MISMATCH' | 'QUALITY_ISSUE' | 'CALCULATION_ERROR';
+  itemName: string;
+  details: string;
+  recommendation: string;
+  potentialLoss: number;
+}
+
 export interface AnalysisResult {
     riskLevel: 'Low' | 'Medium' | 'High';
     summary: string;
-    insights: string[];
+    insights: InsightItem[]; // Ini yang diubah dari string[]
 }
+// PERUBAHAN SELESAI DI SINI
 
 export interface PriceRecord {
   id: number;
