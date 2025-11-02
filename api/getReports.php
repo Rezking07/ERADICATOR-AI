@@ -12,7 +12,7 @@ $userId = intval($_GET['user_id']);
 $conn = connectDB();
 
 // Siapkan query untuk mencegah SQL Injection
-$stmt = $conn->prepare("SELECT id, report_name, created_at, status, risk_level FROM reports WHERE user_id = ? ORDER BY created_at DESC");
+$stmt = $conn->prepare("SELECT id, report_name, created_at, status, risk_level, analysis_result FROM reports WHERE user_id = ? ORDER BY created_at DESC");
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $result = $stmt->get_result();

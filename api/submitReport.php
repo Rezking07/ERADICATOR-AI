@@ -17,13 +17,18 @@ $fileContent = $data->file_content; // Di dunia nyata, ini perlu di-sanitize leb
 
 // Di sini Anda akan memanggil Gemini API untuk analisis
 // Untuk saat ini, kita akan gunakan status 'In Progress' dan risk_level 'Medium' sebagai placeholder
-$status = 'In Progress';
-$riskLevel = 'Medium'; // Ini akan di-update oleh proses analisis AI
+require_once 'analyze_corruption.php';
+
+$analysisResult = analyzeCorruption($fileContent);
+
+$status = 'Completed';
+$riskLevel = $analysisResult['risk_level'];
+$analysisResultJson = json_encode($analysisResult);
 
 $conn = connectDB();
 
-$stmt = $conn->prepare("INSERT INTO reports (user_id, report_name, status, risk_level) VALUES (?, ?, ?, ?)");
-$stmt->bind_param("isss", $userId, $reportName, $status, $riskLevel);
+$stmt = $conn->prepare("INSERT INTO reports (user_id, report_name, status, risk_level, analysis_result) VALUES (?, ?, ?, ?, ?)");
+$stmt->bind_param("issss", $userId, $reportName, $status, $riskLevel, $analysisResultJson);
 
 if ($stmt->execute()) {
     $reportId = $stmt->insert_id;

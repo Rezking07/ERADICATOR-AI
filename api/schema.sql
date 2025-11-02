@@ -7,6 +7,7 @@ CREATE TABLE `reports` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `status` enum('Completed','In Progress','Failed') NOT NULL DEFAULT 'In Progress',
   `risk_level` enum('Low','Medium','High') DEFAULT NULL,
+  `analysis_result` text DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
