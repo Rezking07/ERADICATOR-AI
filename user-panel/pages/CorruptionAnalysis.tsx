@@ -9,8 +9,12 @@ import { AnalysisResult, ChatMessage, InsightItem } from '../types';
 import { getCorruptionAnalysis, getAiAssistantResponse } from '../services/geminiService';
 import MarkdownRenderer from '../components/ui/MarkdownRenderer';
 import { useI18n } from '../contexts/I18nContext';
+import Tabs from '../components/ui/Tabs';
+import DatabaseConnection from '../components/ui/DatabaseConnection';
 
 declare var XLSX: any;
+declare var html2canvas: any;
+declare var jspdf: any;
 
 const CorruptionAnalysis: React.FC = () => {
     const { t } = useI18n();
@@ -123,29 +127,56 @@ const CorruptionAnalysis: React.FC = () => {
         return map[risk];
     }
 
+    const generatePdf = () => {
+        const input = document.getElementById('analysis-result');
+        if (input) {
+            html2canvas(input).then((canvas: any) => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jspdf.jsPDF();
+                pdf.addImage(imgData, 'PNG', 0, 0);
+                pdf.save("analysis-result.pdf");
+            });
+        }
+    };
+
     return (
-        <div className="space-y-6">
+        <div className="space-y-6" id="analysis-result">
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">{t('analysisTitle')}</h1>
             <p className="text-gray-600 dark:text-gray-400">{t('analysisDescription')}</p>
 
             <Card>
-                <div className="flex flex-col items-center justify-center w-full">
-                    <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <UploadCloudIcon className="w-10 h-10 mb-4 text-gray-500 dark:text-gray-400" />
-                            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">{t('clickToUpload')}</span> {t('dragAndDrop')}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">{t('fileTypes')}</p>
-                        </div>
-                        <input id="dropzone-file" type="file" className="hidden" onChange={handleFileChange} accept=".txt,.csv,.xlsx,.xls" />
-                    </label>
-                    {file && <p className="mt-4 text-gray-700 dark:text-gray-300">{t('selectedFile')}: <span className="font-semibold">{file.name}</span></p>}
-                </div>
+                <Tabs
+                    tabs={[
+                        {
+                            label: t('fileUpload'),
+                            content: (
+                                <div>
+                                    <div className="flex flex-col items-center justify-center w-full">
+                                        <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                <UploadCloudIcon className="w-10 h-10 mb-4 text-gray-500 dark:text-gray-400" />
+                                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">{t('clickToUpload')}</span> {t('dragAndDrop')}</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">{t('fileTypes')}</p>
+                                            </div>
+                                            <input id="dropzone-file" type="file" className="hidden" onChange={handleFileChange} accept=".txt,.csv,.xlsx,.xls" />
+                                        </label>
+                                        {file && <p className="mt-4 text-gray-700 dark:text-gray-300">{t('selectedFile')}: <span className="font-semibold">{file.name}</span></p>}
+                                    </div>
 
-                <div className="mt-6 text-center">
-                    <Button onClick={handleAnalyze} disabled={!file || isAnalyzing} size="lg">
-                        {isAnalyzing ? ( <><Spinner /> <span className="ml-2">{t('analyzing')}</span></> ) : t('startAnalysis')}
-                    </Button>
-                </div>
+                                    <div className="mt-6 text-center">
+                                        <Button onClick={handleAnalyze} disabled={!file || isAnalyzing} size="lg">
+                                            {isAnalyzing ? ( <><Spinner /> <span className="ml-2">{t('analyzing')}</span></> ) : t('startAnalysis')}
+                                        </Button>
+                                    </div>
+                                </div>
+                            ),
+                        },
+                        {
+                            label: t('databaseConnection'),
+                            content: <DatabaseConnection setAnalysisResult={setAnalysisResult} isAnalyzing={isAnalyzing} />,
+                        },
+                    ]}
+                />
             </Card>
             
             {error && ( <Card className="border-red-500 bg-red-50 dark:bg-red-900/20"><p className="text-red-700 dark:text-red-300">{error}</p></Card> )}
@@ -185,7 +216,7 @@ const CorruptionAnalysis: React.FC = () => {
                                 </div>
                             </div>
                             <div className="pt-4 flex space-x-4">
-                                <Button variant="secondary"><DownloadIcon className="w-4 h-4 mr-2" />{t('downloadPDF')}</Button>
+                                <Button variant="secondary" onClick={generatePdf}><DownloadIcon className="w-4 h-4 mr-2" />{t('downloadPDF')}</Button>
                                 <Button variant="secondary"><DownloadIcon className="w-4 h-4 mr-2" />{t('downloadExcel')}</Button>
                             </div>
                         </div>
